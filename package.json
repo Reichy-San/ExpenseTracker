@@ -1,5 +1,10 @@
 {
   "dependencies": {
-    "nodemailer": "^6.10.0"
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^7.0.1",
+    "@mui/styled-engine-sc": "^7.0.1",
+    "@mui/x-charts": "^7.28.0",
+    "styled-components": "^6.1.17"
   }
 }

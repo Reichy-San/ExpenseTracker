@@ -1,63 +1,52 @@
 const express = require("express");
 const router = express.Router();
 const Expense = require("../Models/Expense");
+const authenticateToken = require("../middleware/authMiddleware"); // Import your authentication middleware
 
-// ADD AN EXPENSE
-
+// Add an Expense (requires authentication)
 router.post("/", async (req, res) => {
     try {
-        const newExpense = await Expense(req.body);
-        const expense = newExpense.save();
-        res.status(201).json(expense);
+        const newExpense = new Expense({ ...req.body, userId: req.user.userId }); // Assuming req.user.userId is set in the token
+        const savedExpense = await newExpense.save();
+        res.status(201).json(savedExpense);
     } catch (error) {
-        res.status(500).jspon(error);
+        res.status(500).json( error);
     }
 });
 
-// GET ALL EXPENSES
-
-router.get("/", async (req, res) => {
+// Get All Expenses 
+router.get("/",  async (req, res) => {
     try {
-        const expenses = await Expense.find().sort({ createdAt: -1 });
+        const expenses = await Expense.find({ userId: req.user.userId }).sort({ createdAt: -1 });
         res.status(200).json(expenses);
     } catch (error) {
-        res.status(500).json(error);
+        res.status(500).json( error );
     }
 });
 
-// UPDATE AN EXPENSE
 
+// Update Expense
 router.put("/:id", async (req, res) => {
-
     try {
-        const expense = await Expense.findByIdAndUpdate(
+        const updatedExpense = await Expense.findByIdAndUpdate(
             req.params.id,
-            {
-                $set: req.body
-            },
+            { $set: req.body },
             { new: true }
         );
-
-        res.status(201).json(expense);
+        res.status(200).json(updatedExpense);
     } catch (error) {
         res.status(500).json(error);
     }
-
 });
 
-// DELETE AN EXPENSE
-
+// Delete an Expense (requires authentication)
 router.delete("/:id", async (req, res) => {
-
     try {
-        
         await Expense.findByIdAndDelete(req.params.id);
-        res.status(201).json("deleted successfully");
+        res.status(200).json({ message: "Expense deleted successfully" });
     } catch (error) {
         res.status(500).json(error);
     }
 });
-
 
 module.exports = router;
-
